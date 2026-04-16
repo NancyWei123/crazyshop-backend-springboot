@@ -1,14 +1,16 @@
 # A distributed online shop system.
 ## Module
-### 1. User Service
+### Gateway Service
 
-### 2. Product Service
+### User Service
 
-### 3. Order Service
+### Product Service
 
-### 4. Cart Service
+### Order Service
 
-### 5. Payment Service
+### Cart Service
+
+### Payment Service
 
 ## Tech Stack
-SpringBoot + Redis + Rabbitmq + Nacos + Open Feign +Sentinel + Getaway + Seata + skywalking + RBAC permission design + Elasticsearch + Quartz + Swagger + Docker
+SpringBoot + Redis + Rabbitmq + Nacos + Open Feign +Sentinel + Gateway + Seata + skywalking + RBAC permission design + Elasticsearch + Quartz + Swagger + Docker
