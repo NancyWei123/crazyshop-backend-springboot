@@ -4,6 +4,8 @@
 
 ### User Service
 
+### Shop Service
+
 ### Product Service
 
 ### Order Service
