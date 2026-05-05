@@ -22,7 +22,7 @@
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.5</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.3.3</spring-cloud-alibaba.version>
-        <jjwt.version>0.11.5</jjwt.version>
+        <jjwt.version>0.12.7</jjwt.version>
     </properties>
 
     <dependencyManagement>
@@ -48,6 +48,28 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- JWT API -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.7</version>
+        </dependency>
+
+        <!-- JWT implementation, required at runtime -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.7</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JSON support, required at runtime -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.7</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
@@ -69,10 +91,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
 
         <!-- Spring Data JPA -->
         <dependency>
@@ -93,12 +111,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.36</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.7</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
