@@ -2,7 +2,6 @@ package org.target.user.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -12,24 +11,24 @@ public class JwtUtil {
 
     private static final String SECRET = "targettargettargettargettargettarget123456";
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
-    private static final long EXPIRE = 1000L * 60 * 60 * 24; // 1 day
+    private static final long EXPIRE = 1000L * 60 * 60 * 24;
 
     public static String generateToken(Long userId, String email) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .subject(String.valueOf(userId))
                 .claim("email", email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))
-                .signWith(KEY, SignatureAlgorithm.HS256)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRE))
+                .signWith(KEY)
                 .compact();
     }
 
     public static Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(KEY)
+        return Jwts.parser()
+                .verifyWith(KEY)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public static Long extractUserId(String token) {

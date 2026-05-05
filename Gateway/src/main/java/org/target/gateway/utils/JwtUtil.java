@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtUtil {
 
     // Must be the same secret as user-service
-    private static final String SECRET_KEY = "your-secret-key-must-be-at-least-32-bytes";
+    private static final String SECRET_KEY = "targettargettargettargettargettarget123456";
 
     private static final SecretKey KEY =
             Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
