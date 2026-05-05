@@ -3,6 +3,7 @@ package org.target.product.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.target.product.dto.CreateProductRequest;
+import org.target.product.dto.ProductCartInfoDTO;
 import org.target.product.dto.ProductDetailDTO;
 import org.target.product.dto.ProductOrderInfoDTO;
 import org.target.product.entity.Product;
@@ -16,6 +17,11 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    @GetMapping("/{productId}/cart-info")
+    public ProductCartInfoDTO getProductCartInfo(@PathVariable Long productId) {
+        return productService.getProductCartInfo(productId);
+    }
+
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();

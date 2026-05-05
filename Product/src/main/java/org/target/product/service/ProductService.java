@@ -3,6 +3,7 @@ package org.target.product.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.target.product.dto.CreateProductRequest;
+import org.target.product.dto.ProductCartInfoDTO;
 import org.target.product.dto.ProductDetailDTO;
 import org.target.product.dto.ProductOrderInfoDTO;
 import org.target.product.entity.Product;
@@ -93,5 +94,18 @@ public class ProductService {
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    public ProductCartInfoDTO getProductCartInfo(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        return ProductCartInfoDTO.builder()
+                .productId(product.getId())
+                .productName(product.getName())
+                .productImage(product.getImageUrl())
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .build();
     }
 }
