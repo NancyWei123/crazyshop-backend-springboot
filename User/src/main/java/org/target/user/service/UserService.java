@@ -9,4 +9,5 @@ public interface UserService {
     UserDTO register(RegisterRequest request);
     LoginResponse login(LoginRequest request);
     UserDTO getById(Long id);
+    void sendVerificationCode(String email);
 }

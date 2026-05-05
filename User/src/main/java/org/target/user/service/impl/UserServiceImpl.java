@@ -1,4 +1,4 @@
-package org.target.user.service;
+package org.target.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,7 +9,9 @@ import org.target.user.dto.RegisterRequest;
 import org.target.user.dto.UserDTO;
 import org.target.user.entity.User;
 import org.target.user.repository.UserRepository;
+import org.target.user.service.EmailService;
 import org.target.user.service.UserService;
+import org.target.user.service.VerificationCodeService;
 import org.target.user.utils.JwtUtil;
 
 @Service
@@ -17,10 +19,34 @@ import org.target.user.utils.JwtUtil;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final VerificationCodeService verificationCodeService;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
+    public void sendVerificationCode(String email) {
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException("Email cannot be empty");
+        }
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        String code = emailService.generateCode();
+
+        verificationCodeService.saveCode(email, code);
+
+        emailService.sendVerificationCode(email, code);
+    }
+
+    @Override
     public UserDTO register(RegisterRequest request) {
+        if (!verificationCodeService.verifyCode(request.getEmail(), request.getCode())) {
+            throw new RuntimeException("Invalid or expired verification code");
+        }
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
