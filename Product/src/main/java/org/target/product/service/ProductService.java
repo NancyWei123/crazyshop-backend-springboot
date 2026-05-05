@@ -90,4 +90,8 @@ public class ProductService {
     public List<Product> getProductsByShop(Long shopId) {
         return productRepository.findByShopId(shopId);
     }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
 }

@@ -16,6 +16,10 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
+    }
 
     @PostMapping
     public Product createProduct(@RequestBody CreateProductRequest request) {
