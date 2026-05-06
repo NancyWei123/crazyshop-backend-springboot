@@ -30,4 +30,20 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getMyOrders(userId));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDTO> getOrderById(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id
+    ) {
+        OrderDTO order = orderService.getOrdersByUserId(userId,id);
+        return ResponseEntity.ok(order);
+    }
+    @PutMapping("/{id}/paid")
+    public ResponseEntity<OrderDTO> markOrderAsPaid(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id
+    ) {
+        OrderDTO order = orderService.markOrderAsPaid(userId, id);
+        return ResponseEntity.ok(order);
+    }
 }

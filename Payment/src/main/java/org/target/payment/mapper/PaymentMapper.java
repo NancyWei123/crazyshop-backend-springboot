@@ -1,26 +1,26 @@
 package org.target.payment.mapper;
 
-import org.springframework.stereotype.Component;
-import org.target.payment.dto.CreatePaymentRequest;
+import org.target.payment.dto.PaymentDTO;
 import org.target.payment.entity.Payment;
 
-import java.time.LocalDateTime;
-
-@Component
 public class PaymentMapper {
 
-    public Payment toEntity(Long userId, CreatePaymentRequest request) {
-        LocalDateTime now = LocalDateTime.now();
+    public static PaymentDTO toDTO(Payment payment) {
+        if (payment == null) {
+            return null;
+        }
 
-        Payment payment = new Payment();
-        payment.setUserId(userId);
-        payment.setOrderId(request.getOrderId());
-        payment.setAmount(request.getAmount());
-        payment.setPaymentMethod(request.getPaymentMethod());
-        payment.setStatus("PENDING");
-        payment.setCreatedAt(now);
-        payment.setUpdatedAt(now);
-
-        return payment;
+        return PaymentDTO.builder()
+                .id(payment.getId())
+                .orderId(payment.getOrderId())
+                .userId(payment.getUserId())
+                .amount(payment.getAmount())
+                .paymentMethod(payment.getPaymentMethod())
+                .status(payment.getStatus())
+                .transactionId(payment.getTransactionId())
+                .createdAt(payment.getCreatedAt())
+                .paidAt(payment.getPaidAt())
+                .refundedAt(payment.getRefundedAt())
+                .build();
     }
 }

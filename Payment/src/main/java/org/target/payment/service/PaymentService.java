@@ -1,20 +1,13 @@
 package org.target.payment.service;
 
-import org.target.payment.dto.CreatePaymentRequest;
-import org.target.payment.dto.UpdatePaymentStatusRequest;
-import org.target.payment.entity.Payment;
-
-import java.util.List;
+import org.target.payment.dto.PaymentDTO;
+import org.target.payment.dto.PaymentRequest;
 
 public interface PaymentService {
 
-    Payment createPayment(Long userId, CreatePaymentRequest request);
+    PaymentDTO pay(Long userId, PaymentRequest request);
 
-    Payment getPaymentById(Long paymentId);
+    PaymentDTO getPaymentByOrderId(Long userId, Long orderId);
 
-    List<Payment> getPaymentsByOrderId(Long orderId);
-
-    List<Payment> getMyPayments(Long userId);
-
-    Payment updatePaymentStatus(Long paymentId, UpdatePaymentStatusRequest request);
+    PaymentDTO refund(Long userId, Long paymentId);
 }

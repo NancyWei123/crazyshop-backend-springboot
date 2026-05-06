@@ -1,17 +1,23 @@
 package org.target.order.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
-public class ProductOrderInfoDTO {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductCartInfoDTO {
 
     private Long productId;
 
     private String productName;
 
-    private String imageUrl;
+    private String productImage;
 
     private BigDecimal price;
 

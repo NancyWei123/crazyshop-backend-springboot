@@ -2,12 +2,9 @@ package org.target.payment.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.target.payment.dto.CreatePaymentRequest;
-import org.target.payment.dto.UpdatePaymentStatusRequest;
-import org.target.payment.entity.Payment;
+import org.target.payment.dto.PaymentDTO;
+import org.target.payment.dto.PaymentRequest;
 import org.target.payment.service.PaymentService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -16,36 +13,27 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping
-    public Payment createPayment(
+    @PostMapping("/pay")
+    public PaymentDTO pay(
             @RequestHeader("X-User-Id") Long userId,
-            @RequestBody CreatePaymentRequest request
+            @RequestBody PaymentRequest request
     ) {
-        return paymentService.createPayment(userId, request);
-    }
-
-    @GetMapping("/{paymentId}")
-    public Payment getPaymentById(@PathVariable Long paymentId) {
-        return paymentService.getPaymentById(paymentId);
+        return paymentService.pay(userId, request);
     }
 
     @GetMapping("/order/{orderId}")
-    public List<Payment> getPaymentsByOrderId(@PathVariable Long orderId) {
-        return paymentService.getPaymentsByOrderId(orderId);
+    public PaymentDTO getPaymentByOrderId(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long orderId
+    ) {
+        return paymentService.getPaymentByOrderId(userId, orderId);
     }
 
-    @GetMapping("/my")
-    public List<Payment> getMyPayments(
-            @RequestHeader("X-User-Id") Long userId
+    @PutMapping("/{paymentId}/refund")
+    public PaymentDTO refund(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long paymentId
     ) {
-        return paymentService.getMyPayments(userId);
-    }
-
-    @PutMapping("/{paymentId}/status")
-    public Payment updatePaymentStatus(
-            @PathVariable Long paymentId,
-            @RequestBody UpdatePaymentStatusRequest request
-    ) {
-        return paymentService.updatePaymentStatus(paymentId, request);
+        return paymentService.refund(userId, paymentId);
     }
 }

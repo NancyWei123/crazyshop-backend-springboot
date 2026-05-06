@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.target.order.dto.OrderDTO;
 import org.target.order.dto.OrderSnapshotsMessage;
-import org.target.order.dto.ProductOrderInfoDTO;
+import org.target.order.dto.ProductCartInfoDTO;
 import org.target.order.dto.SubmitOrderRequest;
 import org.target.order.entity.Order;
 import org.target.order.entity.OrderItem;
@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +31,20 @@ public class OrderServiceImpl implements OrderService {
     private final ProductFeignClient productClient;
 
 
-    @GlobalTransactional(name = "create-order-tx", rollbackFor = Exception.class)
+    // @GlobalTransactional(name = "create-order-tx", rollbackFor = Exception.class)
     @Transactional
     @Override
     public OrderDTO submitOrder(Long userId, SubmitOrderRequest request) {
+
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new RuntimeException("Order items cannot be empty");
+        }
 
         Order order = new Order();
         order.setUserId(userId);
         order.setStatus("CREATED");
         order.setCreatedAt(LocalDateTime.now());
+        order.setTotalPrice(BigDecimal.ZERO);
 
         Order savedOrder = orderRepository.save(order);
 
@@ -46,7 +53,15 @@ public class OrderServiceImpl implements OrderService {
 
         for (var itemRequest : request.getItems()) {
 
-            ProductOrderInfoDTO product = productClient.getProductById(itemRequest.getProductId());
+            if (itemRequest.getProductId() == null) {
+                throw new RuntimeException("Product id cannot be null");
+            }
+
+            if (itemRequest.getQuantity() == null || itemRequest.getQuantity() <= 0) {
+                throw new RuntimeException("Quantity must be greater than 0");
+            }
+
+            ProductCartInfoDTO product = productClient.getProductById(itemRequest.getProductId());
 
             if (product.getStock() < itemRequest.getQuantity()) {
                 throw new RuntimeException("Product stock is not enough: " + product.getProductName());
@@ -56,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
                     .multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
 
             OrderItem orderItem = new OrderItem();
-            orderItem.setId(savedOrder.getId());
+            orderItem.setOrder(savedOrder); // important
             orderItem.setProductId(product.getProductId());
             orderItem.setPrice(product.getPrice());
             orderItem.setQuantity(itemRequest.getQuantity());
@@ -69,10 +84,9 @@ public class OrderServiceImpl implements OrderService {
         }
 
         savedOrder.setTotalPrice(totalAmount);
-        savedOrder.setCreatedAt(LocalDateTime.now());
-        orderRepository.save(savedOrder);
+        Order finalOrder = orderRepository.save(savedOrder);
 
-        return toDTO(savedOrder, savedItems);
+        return toDTO(finalOrder, savedItems);
     }
 
     @Override
@@ -84,6 +98,40 @@ public class OrderServiceImpl implements OrderService {
                     return toDTO(order, items);
                 })
                 .toList();
+    }
+
+    @Override
+    public OrderDTO getOrdersByUserId(Long userId, Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!Objects.equals(order.getUserId(), userId)) {
+            throw new RuntimeException("You cannot access this order");
+        }
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setUserId(order.getUserId());
+        dto.setStatus(order.getStatus());
+        dto.setTotalPrice(order.getTotalPrice());
+        return dto;
+    }
+
+    @Override
+    public OrderDTO markOrderAsPaid(Long userId, Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        if(!order.getId().equals(order.getUserId())) {
+            return null;
+        }
+        order.setStatus("PAID");
+        Order saved = orderRepository.save(order);
+        OrderDTO dto = new OrderDTO();
+        dto.setId(saved.getId());
+        dto.setUserId(saved.getUserId());
+        dto.setTotalPrice(saved.getTotalPrice());
+        dto.setStatus(saved.getStatus());
+        dto.setCreatedAt(saved.getCreatedAt());
+        return dto;
     }
 
     private void sendOrderSnapshot(Order order, List<OrderItem> savedItems) {

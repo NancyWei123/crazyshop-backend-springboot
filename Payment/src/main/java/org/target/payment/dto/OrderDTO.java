@@ -1,4 +1,4 @@
-package org.target.order.dto;
+package org.target.payment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
