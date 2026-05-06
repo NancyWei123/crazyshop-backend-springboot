@@ -9,6 +9,6 @@ import org.target.order.dto.ProductOrderInfoDTO;
 @FeignClient(name = "product-service")
 public interface ProductFeignClient {
 
-    @GetMapping("/api/products/{id}")
+    @GetMapping("/api/products/{productId}/cart-info")
     ProductOrderInfoDTO getProductById(@PathVariable("id") Long id);
 }
